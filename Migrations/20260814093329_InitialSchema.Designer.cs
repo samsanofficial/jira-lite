@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using jira_lite.Data;
 
@@ -11,9 +12,11 @@ using jira_lite.Data;
 namespace jira_lite.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260814093329_InitialSchema")]
+    partial class InitialSchema
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -121,18 +124,6 @@ namespace jira_lite.Migrations
                         .IsUnique();
 
                     b.ToTable("Projects");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            CreatedById = 1,
-                            Description = "A lightweight Jira clone for learning purposes",
-                            Key = "JL",
-                            Name = "Jira Lite",
-                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
-                        });
                 });
 
             modelBuilder.Entity("jira_lite.Models.Role", b =>
@@ -154,32 +145,6 @@ namespace jira_lite.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Roles");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Description = "Full access to the project",
-                            Name = "Project Admin"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Description = "Can manage epics and stories",
-                            Name = "Lead"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Description = "Can work on assigned tasks",
-                            Name = "Member"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Description = "Read-only access",
-                            Name = "Viewer"
-                        });
                 });
 
             modelBuilder.Entity("jira_lite.Models.Story", b =>
@@ -380,16 +345,6 @@ namespace jira_lite.Migrations
                         .IsUnique();
 
                     b.ToTable("Users");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Email = "admin@jiralite.com",
-                            FullName = "Admin",
-                            PasswordHash = "$2a$11$ow/8YBLWFpFMJwCBESHpEusFNJOHY8bFJmNrCpRwiqrjrRGRDDfgK"
-                        });
                 });
 
             modelBuilder.Entity("jira_lite.Models.UserProjectRole", b =>
@@ -413,15 +368,6 @@ namespace jira_lite.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("UserProjectRoles");
-
-                    b.HasData(
-                        new
-                        {
-                            UserId = 1,
-                            ProjectId = 1,
-                            RoleId = 1,
-                            AssignedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
-                        });
                 });
 
             modelBuilder.Entity("jira_lite.Models.WorkflowStatus", b =>
@@ -448,36 +394,6 @@ namespace jira_lite.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("WorkflowStatuses");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Color = "#e2e8f0",
-                            Name = "Todo",
-                            Order = 1
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Color = "#3b82f6",
-                            Name = "In Progress",
-                            Order = 2
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Color = "#f59e0b",
-                            Name = "In Review",
-                            Order = 3
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Color = "#22c55e",
-                            Name = "Done",
-                            Order = 4
-                        });
                 });
 
             modelBuilder.Entity("jira_lite.Models.WorkflowTransition", b =>
@@ -506,148 +422,6 @@ namespace jira_lite.Migrations
                     b.HasIndex("ToStatusId");
 
                     b.ToTable("WorkflowTransitions");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            EntityType = "Epic",
-                            FromStatusId = 1,
-                            ToStatusId = 2
-                        },
-                        new
-                        {
-                            Id = 2,
-                            EntityType = "Epic",
-                            FromStatusId = 2,
-                            ToStatusId = 3
-                        },
-                        new
-                        {
-                            Id = 3,
-                            EntityType = "Epic",
-                            FromStatusId = 3,
-                            ToStatusId = 4
-                        },
-                        new
-                        {
-                            Id = 4,
-                            EntityType = "Epic",
-                            FromStatusId = 3,
-                            ToStatusId = 2
-                        },
-                        new
-                        {
-                            Id = 5,
-                            EntityType = "Epic",
-                            FromStatusId = 2,
-                            ToStatusId = 1
-                        },
-                        new
-                        {
-                            Id = 6,
-                            EntityType = "Story",
-                            FromStatusId = 1,
-                            ToStatusId = 2
-                        },
-                        new
-                        {
-                            Id = 7,
-                            EntityType = "Story",
-                            FromStatusId = 2,
-                            ToStatusId = 3
-                        },
-                        new
-                        {
-                            Id = 8,
-                            EntityType = "Story",
-                            FromStatusId = 3,
-                            ToStatusId = 4
-                        },
-                        new
-                        {
-                            Id = 9,
-                            EntityType = "Story",
-                            FromStatusId = 3,
-                            ToStatusId = 2
-                        },
-                        new
-                        {
-                            Id = 10,
-                            EntityType = "Story",
-                            FromStatusId = 2,
-                            ToStatusId = 1
-                        },
-                        new
-                        {
-                            Id = 11,
-                            EntityType = "Task",
-                            FromStatusId = 1,
-                            ToStatusId = 2
-                        },
-                        new
-                        {
-                            Id = 12,
-                            EntityType = "Task",
-                            FromStatusId = 2,
-                            ToStatusId = 3
-                        },
-                        new
-                        {
-                            Id = 13,
-                            EntityType = "Task",
-                            FromStatusId = 3,
-                            ToStatusId = 4
-                        },
-                        new
-                        {
-                            Id = 14,
-                            EntityType = "Task",
-                            FromStatusId = 3,
-                            ToStatusId = 2
-                        },
-                        new
-                        {
-                            Id = 15,
-                            EntityType = "Task",
-                            FromStatusId = 2,
-                            ToStatusId = 1
-                        },
-                        new
-                        {
-                            Id = 16,
-                            EntityType = "Subtask",
-                            FromStatusId = 1,
-                            ToStatusId = 2
-                        },
-                        new
-                        {
-                            Id = 17,
-                            EntityType = "Subtask",
-                            FromStatusId = 2,
-                            ToStatusId = 3
-                        },
-                        new
-                        {
-                            Id = 18,
-                            EntityType = "Subtask",
-                            FromStatusId = 3,
-                            ToStatusId = 4
-                        },
-                        new
-                        {
-                            Id = 19,
-                            EntityType = "Subtask",
-                            FromStatusId = 3,
-                            ToStatusId = 2
-                        },
-                        new
-                        {
-                            Id = 20,
-                            EntityType = "Subtask",
-                            FromStatusId = 2,
-                            ToStatusId = 1
-                        });
                 });
 
             modelBuilder.Entity("jira_lite.Models.Epic", b =>
