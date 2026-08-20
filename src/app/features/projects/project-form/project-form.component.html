@@ -1,0 +1,62 @@
+<div class="page">
+  <div class="content">
+    <div class="back-link">
+      <a routerLink="/projects">← Back to projects</a>
+    </div>
+
+    <div class="form-card">
+      <h2>{{ isEdit ? 'Edit project' : 'Create project' }}</h2>
+
+      <div class="alert error" *ngIf="loadError">{{ loadError }}</div>
+      <div class="alert error" *ngIf="saveError">{{ saveError }}</div>
+      <div class="spinner" *ngIf="loading && isEdit && !form.dirty">Loading…</div>
+
+      <form [formGroup]="form" (ngSubmit)="submit()" *ngIf="!loadError">
+
+        <div class="field">
+          <label for="name">Project name <span class="req">*</span></label>
+          <input id="name" type="text" formControlName="name" placeholder="e.g. Marketing Website"
+                 [class.invalid]="invalid('name')" />
+          <span class="hint" *ngIf="invalid('name')">Name is required (max 200 chars).</span>
+        </div>
+
+        <div class="field">
+          <label for="key">
+            Project key <span class="req">*</span>
+            <span class="label-hint" *ngIf="!isEdit">(short unique identifier, e.g. MKT)</span>
+          </label>
+          <input id="key" type="text" formControlName="key" placeholder="e.g. MKT"
+                 [class.invalid]="invalid('key')" [readonly]="isEdit" />
+          <span class="hint" *ngIf="invalid('key')">Key is required, max 10 alphanumeric chars.</span>
+        </div>
+
+        <div class="field">
+          <label for="description">Description</label>
+          <textarea id="description" formControlName="description" rows="3"
+                    placeholder="Optional project description"
+                    [class.invalid]="invalid('description')"></textarea>
+          <span class="hint" *ngIf="invalid('description')">Max 1000 characters.</span>
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label for="startDate">Start date</label>
+            <input id="startDate" type="date" formControlName="startDate" />
+          </div>
+          <div class="field">
+            <label for="endDate">End date</label>
+            <input id="endDate" type="date" formControlName="endDate" />
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <a routerLink="/projects" class="btn-ghost">Cancel</a>
+          <button type="submit" class="btn-primary" [disabled]="loading">
+            {{ loading ? 'Saving…' : (isEdit ? 'Save changes' : 'Create project') }}
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>

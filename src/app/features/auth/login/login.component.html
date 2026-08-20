@@ -1,0 +1,46 @@
+<div class="login-page">
+  <div class="login-card">
+    <div class="logo">
+      <span class="logo-icon">J</span>
+      <span class="logo-text">Jira Lite</span>
+    </div>
+
+    <h2>Sign in to your account</h2>
+
+    <div class="alert error" *ngIf="error">{{ error }}</div>
+
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <div class="field">
+        <label for="email">Email</label>
+        <input
+          id="email"
+          type="email"
+          formControlName="email"
+          placeholder="you@example.com"
+          [class.invalid]="form.get('email')?.invalid && form.get('email')?.touched"
+        />
+        <span class="hint" *ngIf="form.get('email')?.invalid && form.get('email')?.touched">
+          Enter a valid email.
+        </span>
+      </div>
+
+      <div class="field">
+        <label for="password">Password</label>
+        <input
+          id="password"
+          type="password"
+          formControlName="password"
+          placeholder="••••••••"
+          [class.invalid]="form.get('password')?.invalid && form.get('password')?.touched"
+        />
+        <span class="hint" *ngIf="form.get('password')?.invalid && form.get('password')?.touched">
+          Password is required.
+        </span>
+      </div>
+
+      <button type="submit" class="btn-primary" [disabled]="loading">
+        {{ loading ? 'Signing in…' : 'Sign in' }}
+      </button>
+    </form>
+  </div>
+</div>

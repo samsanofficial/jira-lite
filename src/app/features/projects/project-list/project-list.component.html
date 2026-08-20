@@ -1,0 +1,55 @@
+<div class="page">
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="nav-brand">
+      <span class="logo-icon">J</span>
+      <span>Jira Lite</span>
+    </div>
+    <div class="nav-right">
+      <span class="nav-user">{{ authService.currentUser?.fullName }}</span>
+      <button class="btn-ghost" (click)="logout()">Sign out</button>
+    </div>
+  </nav>
+
+  <div class="content">
+    <div class="page-header">
+      <h1>Projects</h1>
+      <a routerLink="/projects/new" class="btn-primary">+ New project</a>
+    </div>
+
+    <div class="alert error" *ngIf="error">{{ error }}</div>
+    <div class="alert error" *ngIf="deleteError">{{ deleteError }}</div>
+
+    <div class="spinner" *ngIf="loading">Loading…</div>
+
+    <div class="empty" *ngIf="!loading && projects.length === 0">
+      <p>No projects yet. <a routerLink="/projects/new">Create your first project.</a></p>
+    </div>
+
+    <table class="table" *ngIf="!loading && projects.length > 0">
+      <thead>
+        <tr>
+          <th>Key</th>
+          <th>Name</th>
+          <th>Description</th>
+          <th>Created by</th>
+          <th>Created</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let p of projects">
+          <td><span class="badge">{{ p.key }}</span></td>
+          <td class="project-name">{{ p.name }}</td>
+          <td class="desc">{{ p.description || '—' }}</td>
+          <td>{{ p.createdByName }}</td>
+          <td>{{ p.createdAt | date:'mediumDate' }}</td>
+          <td class="actions">
+            <button class="btn-sm btn-outline" (click)="edit(p.id)">Edit</button>
+            <button class="btn-sm btn-danger" (click)="delete(p)">Delete</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
