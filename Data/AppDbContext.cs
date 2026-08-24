@@ -18,9 +18,12 @@ public class AppDbContext : DbContext
     public DbSet<Story> Stories => Set<Story>();
     public DbSet<Task> Tasks => Set<Task>();
     public DbSet<Subtask> Subtasks => Set<Subtask>();
+    public DbSet<FlatTreeNode> TreeNodes => Set<FlatTreeNode>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<FlatTreeNode>().HasNoKey();
+
         // --- User ---
         modelBuilder.Entity<User>(e =>
         {
