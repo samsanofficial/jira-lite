@@ -122,6 +122,13 @@ public class ProjectsController : ControllerBase
             ProjectId = project.Id,
             RoleId    = adminRole.Id
         });
+
+        // Seed default workflow statuses for the new project
+        _db.WorkflowStatuses.AddRange(
+            new WorkflowStatus { Name = "Todo",        Color = "#e2e8f0", Order = 1, ProjectId = project.Id },
+            new WorkflowStatus { Name = "In Progress", Color = "#3b82f6", Order = 2, ProjectId = project.Id },
+            new WorkflowStatus { Name = "Done",        Color = "#22c55e", Order = 3, ProjectId = project.Id }
+        );
         await _db.SaveChangesAsync();
 
         var creator = await _db.Users.FindAsync(userId);

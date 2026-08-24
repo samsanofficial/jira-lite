@@ -22,7 +22,12 @@ public class AppDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<FlatTreeNode>().HasNoKey();
+        modelBuilder.Entity<FlatTreeNode>(e =>
+        {
+            e.HasNoKey();
+            e.Property(n => n.EstimatedHours).HasPrecision(18, 2);
+            e.Property(n => n.LoggedHours).HasPrecision(18, 2);
+        });
 
         // --- User ---
         modelBuilder.Entity<User>(e =>
@@ -56,6 +61,11 @@ public class AppDbContext : DbContext
             e.HasKey(ws => ws.Id);
             e.Property(ws => ws.Name).IsRequired().HasMaxLength(100);
             e.Property(ws => ws.Color).HasMaxLength(20);
+            e.HasOne(ws => ws.Project)
+             .WithMany()
+             .HasForeignKey(ws => ws.ProjectId)
+             .IsRequired(false)
+             .OnDelete(DeleteBehavior.Cascade);
         });
 
         // --- WorkflowTransition ---
@@ -163,12 +173,16 @@ public class AppDbContext : DbContext
             new Role { Id = 4, Name = "Viewer",        Description = "Read-only access" }
         );
 
-        // --- WorkflowStatuses ---
+        // --- WorkflowStatuses (global defaults: ProjectId=null) ---
         modelBuilder.Entity<WorkflowStatus>().HasData(
-            new WorkflowStatus { Id = 1, Name = "Todo",        Color = "#e2e8f0", Order = 1 },
-            new WorkflowStatus { Id = 2, Name = "In Progress", Color = "#3b82f6", Order = 2 },
-            new WorkflowStatus { Id = 3, Name = "In Review",   Color = "#f59e0b", Order = 3 },
-            new WorkflowStatus { Id = 4, Name = "Done",        Color = "#22c55e", Order = 4 }
+            new WorkflowStatus { Id = 1, Name = "Todo",        Color = "#e2e8f0", Order = 1, ProjectId = null },
+            new WorkflowStatus { Id = 2, Name = "In Progress", Color = "#3b82f6", Order = 2, ProjectId = null },
+            new WorkflowStatus { Id = 3, Name = "In Review",   Color = "#f59e0b", Order = 3, ProjectId = null },
+            new WorkflowStatus { Id = 4, Name = "Done",        Color = "#22c55e", Order = 4, ProjectId = null },
+            // Per-project defaults seeded for the sample project
+            new WorkflowStatus { Id = 5, Name = "Todo",        Color = "#e2e8f0", Order = 1, ProjectId = 1 },
+            new WorkflowStatus { Id = 6, Name = "In Progress", Color = "#3b82f6", Order = 2, ProjectId = 1 },
+            new WorkflowStatus { Id = 7, Name = "Done",        Color = "#22c55e", Order = 3, ProjectId = 1 }
         );
 
         // --- WorkflowTransitions ---

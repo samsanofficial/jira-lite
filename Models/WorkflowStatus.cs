@@ -6,6 +6,8 @@ public class WorkflowStatus
     public string Name { get; set; } = string.Empty;
     public string Color { get; set; } = "#cccccc";
     public int Order { get; set; }
+    public int? ProjectId { get; set; }
+    public Project? Project { get; set; }
 
     public ICollection<WorkflowTransition> FromTransitions { get; set; } = new List<WorkflowTransition>();
     public ICollection<WorkflowTransition> ToTransitions { get; set; } = new List<WorkflowTransition>();
