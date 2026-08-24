@@ -1,0 +1,84 @@
+<div class="page">
+  <nav class="navbar">
+    <div class="nav-brand">
+      <span class="logo-icon">J</span><span>Jira Lite</span>
+    </div>
+    <div class="nav-right">
+      <span class="nav-user">{{ authService.currentUser?.fullName }}</span>
+      <button class="btn-ghost" (click)="logout()">Sign out</button>
+    </div>
+  </nav>
+
+  <div class="content">
+    <div class="breadcrumb" *ngIf="epic">
+      <a routerLink="/projects">Projects</a><span>/</span>
+      <a [routerLink]="['/projects', epic.projectId]">Project</a><span>/</span>
+      <span>{{ epic.title }}</span>
+    </div>
+
+    <div class="alert error" *ngIf="error">{{ error }}</div>
+    <div class="alert error" *ngIf="deleteError">{{ deleteError }}</div>
+    <div class="spinner" *ngIf="loading">Loading…</div>
+
+    <ng-container *ngIf="!loading && epic">
+      <div class="epic-header">
+        <div>
+          <div class="meta-row">
+            <span class="priority" [class]="priorityClass(epic.priority)">{{ epic.priority }}</span>
+            <span class="status-badge" [style.background]="epic.statusColor + '33'" [style.color]="epic.statusColor">
+              {{ epic.statusName }}
+            </span>
+          </div>
+          <h1>{{ epic.title }}</h1>
+          <p class="desc" *ngIf="epic.description">{{ epic.description }}</p>
+          <div class="meta">
+            <span *ngIf="epic.assigneeName">Assignee: <strong>{{ epic.assigneeName }}</strong></span>
+            <span *ngIf="epic.dueDate">Due: <strong>{{ epic.dueDate | date:'mediumDate' }}</strong></span>
+          </div>
+        </div>
+        <div class="header-actions">
+          <a [routerLink]="['/epics', epicId, 'edit']" class="btn-outline-sm">Edit epic</a>
+          <a [routerLink]="['/epics', epicId, 'stories', 'new']" class="btn-primary">+ New story</a>
+        </div>
+      </div>
+
+      <div class="section-title">Stories</div>
+
+      <div class="empty" *ngIf="stories.length === 0">
+        No stories yet. <a [routerLink]="['/epics', epicId, 'stories', 'new']">Create the first story.</a>
+      </div>
+
+      <table class="table" *ngIf="stories.length > 0">
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Priority</th>
+            <th>Status</th>
+            <th>Points</th>
+            <th>Assignee</th>
+            <th>Tasks</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let s of stories">
+            <td class="story-title">{{ s.title }}</td>
+            <td><span class="priority" [class]="priorityClass(s.priority)">{{ s.priority }}</span></td>
+            <td>
+              <span class="status-badge" [style.background]="s.statusColor + '33'" [style.color]="s.statusColor">
+                {{ s.statusName }}
+              </span>
+            </td>
+            <td class="count">{{ s.storyPoints ?? '—' }}</td>
+            <td>{{ s.assigneeName || '—' }}</td>
+            <td class="count">{{ s.taskCount }}</td>
+            <td class="actions">
+              <a [routerLink]="['/stories', s.id, 'edit']" class="btn-sm btn-outline">Edit</a>
+              <button class="btn-sm btn-danger" (click)="deleteStory(s)">Delete</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </ng-container>
+  </div>
+</div>

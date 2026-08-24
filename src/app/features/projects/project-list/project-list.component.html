@@ -40,7 +40,7 @@
       <tbody>
         <tr *ngFor="let p of projects">
           <td><span class="badge">{{ p.key }}</span></td>
-          <td class="project-name">{{ p.name }}</td>
+          <td class="project-name"><a [routerLink]="['/projects', p.id]">{{ p.name }}</a></td>
           <td class="desc">{{ p.description || '—' }}</td>
           <td>{{ p.createdByName }}</td>
           <td>{{ p.createdAt | date:'mediumDate' }}</td>

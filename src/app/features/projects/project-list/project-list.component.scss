@@ -123,7 +123,7 @@
     font-size: .8rem;
   }
 
-  .project-name { font-weight: 500; }
+  .project-name { font-weight: 500; a { color: #0052cc; text-decoration: none; &:hover { text-decoration: underline; } } }
   .desc { color: #6b778c; max-width: 280px; }
 
   .actions {
