@@ -1,0 +1,122 @@
+<div class="page">
+  <nav class="navbar">
+    <div class="nav-brand">
+      <span class="logo-icon">J</span><span>Jira Lite</span>
+    </div>
+    <div class="nav-right">
+      <span class="nav-user">{{ authService.currentUser?.fullName }}</span>
+      <button class="btn-ghost" (click)="logout()">Sign out</button>
+    </div>
+  </nav>
+
+  <div class="content">
+    <div class="breadcrumb">
+      <a routerLink="/projects">Projects</a><span>/</span>
+      <a [routerLink]="['/projects', projectId]">Project</a><span>/</span>
+      <span>Workflow statuses</span>
+    </div>
+
+    <div class="page-header">
+      <h1>Workflow Statuses</h1>
+      <a [routerLink]="['/projects', projectId]" class="btn-outline-sm">← Back to project</a>
+    </div>
+
+    <div class="alert error" *ngIf="error">{{ error }}</div>
+    <div class="alert error" *ngIf="saveError">{{ saveError }}</div>
+    <div class="alert error" *ngIf="deleteError">{{ deleteError }}</div>
+    <div class="spinner" *ngIf="loading">Loading…</div>
+
+    <ng-container *ngIf="!loading">
+      <!-- Global statuses notice -->
+      <div class="info-banner" *ngIf="statuses.length > 0 && statuses[0].isGlobal">
+        This project is using the global default statuses. Add a custom status below to override them.
+      </div>
+
+      <!-- Status table -->
+      <table class="table" *ngIf="statuses.length > 0">
+        <thead>
+          <tr>
+            <th>Order</th>
+            <th>Color</th>
+            <th>Name</th>
+            <th>Scope</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <ng-container *ngFor="let s of statuses">
+            <!-- View row -->
+            <tr *ngIf="editId !== s.id">
+              <td class="order-cell">{{ s.order }}</td>
+              <td><span class="color-swatch" [style.background]="s.color"></span></td>
+              <td>
+                <span class="status-badge" [style.background]="s.color + '33'" [style.color]="s.color">
+                  {{ s.name }}
+                </span>
+              </td>
+              <td>
+                <span class="scope-badge" [class.global]="s.isGlobal">
+                  {{ s.isGlobal ? 'Global default' : 'Project' }}
+                </span>
+              </td>
+              <td class="actions">
+                <button class="btn-sm btn-outline" (click)="startEdit(s)" [disabled]="s.isGlobal" [title]="s.isGlobal ? 'Cannot edit global statuses' : 'Edit'">Edit</button>
+                <button class="btn-sm btn-danger" (click)="deleteStatus(s)" [disabled]="s.isGlobal" [title]="s.isGlobal ? 'Cannot delete global statuses' : 'Delete'">Delete</button>
+              </td>
+            </tr>
+            <!-- Inline edit row -->
+            <tr *ngIf="editId === s.id" class="edit-row" [formGroup]="editForm">
+              <td><input type="number" formControlName="order" class="field-input narrow" min="1" /></td>
+              <td><input type="color" formControlName="color" class="color-input" /></td>
+              <td><input type="text" formControlName="name" class="field-input" placeholder="Status name" [class.invalid]="invalid(editForm,'name')" /></td>
+              <td><span class="scope-badge">Project</span></td>
+              <td class="actions">
+                <button class="btn-sm btn-primary" (click)="submitEdit()" [disabled]="editSaving">
+                  {{ editSaving ? '…' : 'Save' }}
+                </button>
+                <button class="btn-sm btn-outline" (click)="cancelEdit()">Cancel</button>
+              </td>
+            </tr>
+          </ng-container>
+        </tbody>
+      </table>
+
+      <div class="empty" *ngIf="statuses.length === 0">No statuses found.</div>
+
+      <!-- Add status section -->
+      <div class="add-section">
+        <button class="btn-primary" (click)="startAdd()" *ngIf="!addMode">+ Add status</button>
+
+        <div class="add-form" *ngIf="addMode" [formGroup]="addForm">
+          <h3>New status</h3>
+          <div class="add-row">
+            <div class="field">
+              <label>Name <span class="req">*</span></label>
+              <input type="text" formControlName="name" placeholder="e.g. Blocked" [class.invalid]="invalid(addForm,'name')" />
+              <span class="hint" *ngIf="invalid(addForm,'name')">Name is required.</span>
+            </div>
+            <div class="field">
+              <label>Color</label>
+              <div class="color-row">
+                <input type="color" formControlName="color" class="color-input-lg" />
+                <span class="color-preview" [style.background]="addForm.value.color + '33'" [style.color]="addForm.value.color">
+                  {{ addForm.value.name || 'Preview' }}
+                </span>
+              </div>
+            </div>
+            <div class="field narrow">
+              <label>Order</label>
+              <input type="number" formControlName="order" min="0" placeholder="auto" />
+            </div>
+          </div>
+          <div class="add-actions">
+            <button class="btn-primary" (click)="submitAdd()" [disabled]="addSaving || addForm.invalid">
+              {{ addSaving ? 'Saving…' : 'Create status' }}
+            </button>
+            <button class="btn-ghost" (click)="cancelAdd()">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+</div>
