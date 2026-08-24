@@ -1,0 +1,86 @@
+<div class="page">
+  <nav class="navbar">
+    <div class="nav-brand"><span class="logo-icon">J</span><span>Jira Lite</span></div>
+    <div class="nav-right">
+      <span class="nav-user">{{ authService.currentUser?.fullName }}</span>
+      <button class="btn-ghost" (click)="logout()">Sign out</button>
+    </div>
+  </nav>
+
+  <div class="content">
+    <div class="breadcrumb" *ngIf="task">
+      <a routerLink="/projects">Projects</a><span>/</span>
+      <a [routerLink]="['/projects', task.projectId]">Project</a><span>/</span>
+      <a [routerLink]="['/epics', task.epicId]">Epic</a><span>/</span>
+      <a [routerLink]="['/stories', task.storyId]">{{ task.storyTitle }}</a><span>/</span>
+      <span>{{ task.title }}</span>
+    </div>
+
+    <div class="alert error" *ngIf="error">{{ error }}</div>
+    <div class="alert error" *ngIf="deleteError">{{ deleteError }}</div>
+    <div class="spinner" *ngIf="loading">Loading…</div>
+
+    <ng-container *ngIf="!loading && task">
+      <div class="task-header">
+        <div>
+          <div class="meta-row">
+            <span class="priority" [class]="priorityClass(task.priority)">{{ task.priority }}</span>
+            <span class="status-badge" [style.background]="task.statusColor + '33'" [style.color]="task.statusColor">
+              {{ task.statusName }}
+            </span>
+          </div>
+          <h1>{{ task.title }}</h1>
+          <p class="desc" *ngIf="task.description">{{ task.description }}</p>
+          <div class="meta">
+            <span *ngIf="task.estimatedHours">Est: <strong>{{ task.estimatedHours }}h</strong></span>
+            <span *ngIf="task.loggedHours">Logged: <strong>{{ task.loggedHours }}h</strong></span>
+            <span *ngIf="task.assigneeName">Assignee: <strong>{{ task.assigneeName }}</strong></span>
+          </div>
+        </div>
+        <div class="header-actions">
+          <a [routerLink]="['/tasks', taskId, 'edit']" class="btn-outline-sm">Edit task</a>
+          <a [routerLink]="['/tasks', taskId, 'subtasks', 'new']" class="btn-primary">+ New subtask</a>
+        </div>
+      </div>
+
+      <div class="section-title">
+        Subtasks
+        <span class="depth-badge">Max depth reached — subtasks have no children</span>
+      </div>
+
+      <div class="empty" *ngIf="subtasks.length === 0">
+        No subtasks yet. <a [routerLink]="['/tasks', taskId, 'subtasks', 'new']">Add the first subtask.</a>
+      </div>
+
+      <table class="table" *ngIf="subtasks.length > 0">
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Priority</th>
+            <th>Status</th>
+            <th>Assignee</th>
+            <th>Created</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let s of subtasks">
+            <td class="sub-title">{{ s.title }}</td>
+            <td><span class="priority" [class]="priorityClass(s.priority)">{{ s.priority }}</span></td>
+            <td>
+              <span class="status-badge" [style.background]="s.statusColor + '33'" [style.color]="s.statusColor">
+                {{ s.statusName }}
+              </span>
+            </td>
+            <td>{{ s.assigneeName || '—' }}</td>
+            <td>{{ s.createdAt | date:'mediumDate' }}</td>
+            <td class="actions">
+              <a [routerLink]="['/subtasks', s.id, 'edit']" class="btn-sm btn-outline">Edit</a>
+              <button class="btn-sm btn-danger" (click)="deleteSubtask(s)">Delete</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </ng-container>
+  </div>
+</div>

@@ -1,0 +1,50 @@
+<div class="page">
+  <div class="content">
+    <div class="back-link"><a [routerLink]="['/stories', storyId]">← Back to story</a></div>
+    <div class="form-card">
+      <h2>{{ isEdit ? 'Edit task' : 'New task' }}</h2>
+      <div class="alert error" *ngIf="loadError">{{ loadError }}</div>
+      <div class="alert error" *ngIf="saveError">{{ saveError }}</div>
+
+      <form [formGroup]="form" (ngSubmit)="submit()" *ngIf="!loadError">
+        <div class="field">
+          <label>Title <span class="req">*</span></label>
+          <input type="text" formControlName="title" placeholder="Task title" [class.invalid]="invalid('title')" />
+          <span class="hint" *ngIf="invalid('title')">Title is required (max 300 chars).</span>
+        </div>
+        <div class="field">
+          <label>Description</label>
+          <textarea formControlName="description" rows="3" placeholder="Optional description"></textarea>
+        </div>
+        <div class="row">
+          <div class="field">
+            <label>Priority <span class="req">*</span></label>
+            <select formControlName="priority">
+              <option *ngFor="let p of priorities" [value]="p">{{ p }}</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Estimated hours</label>
+            <input type="number" formControlName="estimatedHours" placeholder="e.g. 4.5" step="0.5" min="0.5" />
+          </div>
+          <div class="field" *ngIf="isEdit">
+            <label>Logged hours</label>
+            <input type="number" formControlName="loggedHours" placeholder="e.g. 2" step="0.5" min="0" />
+          </div>
+          <div class="field" *ngIf="isEdit">
+            <label>Status</label>
+            <select formControlName="statusId">
+              <option *ngFor="let s of statuses" [value]="s.id">{{ s.name }}</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-actions">
+          <a [routerLink]="['/stories', storyId]" class="btn-ghost">Cancel</a>
+          <button type="submit" class="btn-primary" [disabled]="loading">
+            {{ loading ? 'Saving…' : (isEdit ? 'Save changes' : 'Create task') }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

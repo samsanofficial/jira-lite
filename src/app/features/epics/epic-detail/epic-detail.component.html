@@ -62,7 +62,7 @@
         </thead>
         <tbody>
           <tr *ngFor="let s of stories">
-            <td class="story-title">{{ s.title }}</td>
+            <td class="story-title"><a [routerLink]="['/stories', s.id]">{{ s.title }}</a></td>
             <td><span class="priority" [class]="priorityClass(s.priority)">{{ s.priority }}</span></td>
             <td>
               <span class="status-badge" [style.background]="s.statusColor + '33'" [style.color]="s.statusColor">
