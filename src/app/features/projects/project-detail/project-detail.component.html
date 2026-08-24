@@ -28,7 +28,10 @@
           <h1>{{ project.name }}</h1>
           <p class="project-desc" *ngIf="project.description">{{ project.description }}</p>
         </div>
-        <a [routerLink]="['/projects', projectId, 'epics', 'new']" class="btn-primary">+ New epic</a>
+        <div style="display:flex;gap:.75rem;align-items:center">
+          <a [routerLink]="['/projects', projectId, 'tree']" class="btn-outline-sm">Tree view</a>
+          <a [routerLink]="['/projects', projectId, 'epics', 'new']" class="btn-primary">+ New epic</a>
+        </div>
       </div>
 
       <div class="section-title">Epics</div>

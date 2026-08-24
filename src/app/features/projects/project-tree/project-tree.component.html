@@ -1,0 +1,134 @@
+<div class="page">
+  <nav class="navbar">
+    <div class="nav-brand">
+      <span class="logo-icon">J</span><span>Jira Lite</span>
+    </div>
+    <div class="nav-right">
+      <span class="nav-user">{{ authService.currentUser?.fullName }}</span>
+      <button class="btn-ghost" (click)="logout()">Sign out</button>
+    </div>
+  </nav>
+
+  <div class="content">
+    <div class="breadcrumb">
+      <a routerLink="/projects">Projects</a><span>/</span>
+      <a [routerLink]="['/projects', projectId]">{{ tree?.projectName || 'Project' }}</a><span>/</span>
+      <span>Tree view</span>
+    </div>
+
+    <div class="alert error" *ngIf="error">{{ error }}</div>
+    <div class="spinner" *ngIf="loading">Loading tree…</div>
+
+    <ng-container *ngIf="!loading && tree">
+      <div class="page-header">
+        <div>
+          <span class="project-key">{{ tree.projectKey }}</span>
+          <h1>{{ tree.projectName }} — Tree View</h1>
+        </div>
+        <a [routerLink]="['/projects', projectId]" class="btn-outline-sm">← Back to project</a>
+      </div>
+
+      <div class="stats-panel">
+        <div class="stat">
+          <span class="stat-val epic-col">{{ tree.epicCount }}</span>
+          <span class="stat-lbl">Epics</span>
+        </div>
+        <div class="stat">
+          <span class="stat-val story-col">{{ tree.storyCount }}</span>
+          <span class="stat-lbl">Stories</span>
+        </div>
+        <div class="stat">
+          <span class="stat-val task-col">{{ tree.taskCount }}</span>
+          <span class="stat-lbl">Tasks</span>
+        </div>
+        <div class="stat">
+          <span class="stat-val subtask-col">{{ tree.subtaskCount }}</span>
+          <span class="stat-lbl">Subtasks</span>
+        </div>
+        <div class="stat divider">
+          <span class="stat-val">{{ tree.totalNodes }}</span>
+          <span class="stat-lbl">Total nodes</span>
+        </div>
+        <div class="stat perf">
+          <span class="stat-val perf-val">{{ tree.queryMs }}ms</span>
+          <span class="stat-lbl">SQL query time</span>
+        </div>
+      </div>
+
+      <div class="tree-toolbar">
+        <button class="btn-sm btn-outline" (click)="expandAll()">Expand all</button>
+        <button class="btn-sm btn-outline" (click)="collapseAll()">Collapse all</button>
+        <span class="node-count">{{ tree.totalNodes }} nodes total</span>
+      </div>
+
+      <div class="tree" *ngIf="tree.epics.length > 0; else noData">
+
+        <!-- Epics -->
+        <div class="node epic-node" *ngFor="let epic of tree.epics">
+          <div class="node-row" (click)="toggle('epic-' + epic.id)">
+            <span class="toggle-icon">{{ isExpanded('epic-' + epic.id) ? '▾' : '▸' }}</span>
+            <span class="type-tag epic-tag">E</span>
+            <a [routerLink]="['/epics', epic.id]" class="node-title" (click)="$event.stopPropagation()">{{ epic.title }}</a>
+            <span class="priority" [class]="priorityClass(epic.priority)">{{ epic.priority }}</span>
+            <span class="status-badge" [style.background]="epic.statusColor + '33'" [style.color]="epic.statusColor">{{ epic.statusName }}</span>
+            <span class="child-count">{{ epic.stories.length }} {{ epic.stories.length === 1 ? 'story' : 'stories' }}</span>
+          </div>
+
+          <!-- Stories -->
+          <div class="children" *ngIf="isExpanded('epic-' + epic.id)">
+            <div class="empty-children" *ngIf="epic.stories.length === 0">No stories in this epic.</div>
+
+            <div class="node story-node" *ngFor="let story of epic.stories">
+              <div class="node-row" (click)="toggle('story-' + story.id)">
+                <span class="toggle-icon">{{ isExpanded('story-' + story.id) ? '▾' : '▸' }}</span>
+                <span class="type-tag story-tag">S</span>
+                <a [routerLink]="['/stories', story.id]" class="node-title" (click)="$event.stopPropagation()">{{ story.title }}</a>
+                <span class="priority" [class]="priorityClass(story.priority)">{{ story.priority }}</span>
+                <span class="status-badge" [style.background]="story.statusColor + '33'" [style.color]="story.statusColor">{{ story.statusName }}</span>
+                <span class="points-badge" *ngIf="story.storyPoints">{{ story.storyPoints }} pts</span>
+                <span class="child-count">{{ story.tasks.length }} {{ story.tasks.length === 1 ? 'task' : 'tasks' }}</span>
+              </div>
+
+              <!-- Tasks -->
+              <div class="children" *ngIf="isExpanded('story-' + story.id)">
+                <div class="empty-children" *ngIf="story.tasks.length === 0">No tasks in this story.</div>
+
+                <div class="node task-node" *ngFor="let task of story.tasks">
+                  <div class="node-row" (click)="toggle('task-' + task.id)">
+                    <span class="toggle-icon">{{ isExpanded('task-' + task.id) ? '▾' : '▸' }}</span>
+                    <span class="type-tag task-tag">T</span>
+                    <a [routerLink]="['/tasks', task.id]" class="node-title" (click)="$event.stopPropagation()">{{ task.title }}</a>
+                    <span class="priority" [class]="priorityClass(task.priority)">{{ task.priority }}</span>
+                    <span class="status-badge" [style.background]="task.statusColor + '33'" [style.color]="task.statusColor">{{ task.statusName }}</span>
+                    <span class="hours-badge" *ngIf="task.estimatedHours">{{ task.loggedHours || 0 }}/{{ task.estimatedHours }}h</span>
+                    <span class="child-count">{{ task.subtasks.length }} {{ task.subtasks.length === 1 ? 'subtask' : 'subtasks' }}</span>
+                  </div>
+
+                  <!-- Subtasks -->
+                  <div class="children" *ngIf="isExpanded('task-' + task.id)">
+                    <div class="empty-children" *ngIf="task.subtasks.length === 0">No subtasks.</div>
+
+                    <div class="node subtask-node" *ngFor="let st of task.subtasks">
+                      <div class="node-row leaf">
+                        <span class="toggle-icon leaf-dash">—</span>
+                        <span class="type-tag subtask-tag">ST</span>
+                        <span class="node-title">{{ st.title }}</span>
+                        <span class="priority" [class]="priorityClass(st.priority)">{{ st.priority }}</span>
+                        <span class="status-badge" [style.background]="st.statusColor + '33'" [style.color]="st.statusColor">{{ st.statusName }}</span>
+                        <span class="max-depth-badge">max depth</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <ng-template #noData>
+        <div class="empty">This project has no epics yet. <a [routerLink]="['/projects', projectId, 'epics', 'new']">Create the first epic.</a></div>
+      </ng-template>
+    </ng-container>
+  </div>
+</div>

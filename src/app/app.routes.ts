@@ -16,6 +16,8 @@ export const routes: Routes = [
     loadComponent: () => import('./features/projects/project-detail/project-detail.component').then(m => m.ProjectDetailComponent) },
   { path: 'projects/:id/edit', canActivate: [authGuard],
     loadComponent: () => import('./features/projects/project-form/project-form.component').then(m => m.ProjectFormComponent) },
+  { path: 'projects/:id/tree', canActivate: [authGuard],
+    loadComponent: () => import('./features/projects/project-tree/project-tree.component').then(m => m.ProjectTreeComponent) },
   // Epics
   { path: 'projects/:projectId/epics/new', canActivate: [authGuard],
     loadComponent: () => import('./features/epics/epic-form/epic-form.component').then(m => m.EpicFormComponent) },
